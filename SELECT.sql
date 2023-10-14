@@ -1,8 +1,7 @@
 --Название и продолжительность самого длительного трека
 select name, duration 
 from tracks
-order by duration desc
-limit 1;
+where duration = (select max(duration) from tracks)
 
 --Название треков, продолжительность которых не менее 3,5 минут
 select name
@@ -22,7 +21,7 @@ where trim(name) not like '% %';
 --Название треков, которые содержат слово «мой» или «my»
 select name
 from tracks
-where lower(name) like '%my%' or lower(name) like '%мой%';
+where name ilike '%my%' or name ilike '%мой%';
 
 --Количество исполнителей в каждом жанре
 select name, count(*) 
@@ -43,11 +42,13 @@ left join tracks t on a.album_id = t.album_id
 group by a.name;
 
 --Все исполнители, которые не выпустили альбомы в 2020 году
-select distinct a.name
+select distinct name from artists
+where name not in (select a.name
 from artists a
 left join albumartist a2 on a.artist_id = a2.artist_id
 left join albums a3 on a2.album_id = a3.album_id
-where not year = 2020;
+where year = 2020);
+
 
 --Названия сборников, в которых присутствует конкретный исполнитель (Мадонна)
 select c.name
